@@ -28,10 +28,10 @@ ramdisk_compression=auto;
 
 ## AnyKernel file attributes
 # set permissions/ownership for included ramdisk files
-chmod -R 750 $ramdisk/*;
-chmod -R 755 $overlay/init.lightning.rc;
-chown -R root:root $ramdisk/*;
-
+set_perm_recursive 0 0 755 644 $ramdisk/*;
+set_perm_recursive 0 0 750 750 $ramdisk/init* $ramdisk/sbin;
+# set as executable
+set_perm 0 0 750 $ramdisk/overlay/init.lightning.rc;
 
 ## AnyKernel install
 dump_boot;
@@ -54,10 +54,6 @@ if [ -f $compressed_image ]; then
     $bin/magiskboot --hexpatch $decompressed_image 736B69705F696E697472616D667300 77616E745F696E697472616D667300;
     $bin/magiskboot --compress=gzip $decompressed_image $compressed_image;
 
-   # Add our ramdisk files
-    mv $overlay $ramdisk;
-    cp /system_root/init.rc $ramdisk/overlay;
-    insert_line $ramdisk/overlay/init.rc "init.lightning.rc" after 'import /init.usb.rc' "import /init.lightning.rc";
  fi;
 
   ui_print "Checking for Project Treble...";
